@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Викторина: Компьютерная графика</title>
+<style>
+/* === CSS Variables === */
+:root {
+  --white: #ffffff;
+  --bg: #f8f9fa;
+  --card: #ffffff;
+  --text-primary: #1d1d1f;
+  --text-secondary: #6e6e73;
+  --text-tertiary: #86868b;
+  --border: #e5e5ea;
+  --border-light: #f2f2f7;
+  --accent: #007aff;
+  --accent-hover: #0066d6;
+  --accent-light: #e8f2ff;
+  --success: #34c759;
+  --success-light: #e8faf0;
+  --error: #ff3b30;
+  --error-light: #fff0ef;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.08);
+  --radius: 14px;
+  --radius-lg: 18px;
+  --font: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --transition: 0.2s ease;
+}
+
+/* === Reset & Base === */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text-primary);
+  line-height: 1.5;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 24px 16px;
+  padding-top: max(24px, env(safe-area-inset-top));
+}
+
+/* === Layout === */
+#app {
+  width: 100%;
+  max-width: 520px;
+}
+
+/* === Card === */
+.card {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 32px 24px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* === Start Screen === */
+.start-icon {
+  width: 64px;
+  height: 64px;
+  background: var(--accent-light);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+.start-icon svg {
+  width: 32px;
+  height: 32px;
+  fill: var(--accent);
+}
+
+.start-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+}
+
+.start-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.rules-box {
+  background: var(--border-light);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-bottom: 28px;
+}
+
+.rules-box h3 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 10px;
+}
+
+.rules-box ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rules-box li {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  padding-left: 20px;
+  position: relative;
+}
+
+.rules-box li::before {
+  content: '•';
+  position: absolute;
+  left: 4px;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* === Buttons === */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 14px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: var(--font);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all var(--transition);
+  min-height: 48px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--white);
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+/* === Progress === */
+.progress-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.progress-track {
+  flex: 1;
+  height: 6px;
+  background: var(--border-light);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.progress-text {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+
+/* === Question === */
+.question-number {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
+}
+
+.question-text {
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-bottom: 20px;
+  letter-spacing: -0.01em;
+}
+
+/* === Options === */
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.option-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 0.95rem;
+  font-family: var(--font);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: left;
+  min-height: 48px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.option-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.option-btn:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.option-btn:disabled {
+  cursor: default;
+}
+
+.option-letter {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  transition: all var(--transition);
+}
+
+.option-btn.correct {
+  border-color: var(--success);
+  background: var(--success-light);
+}
+
+.option-btn.correct .option-letter {
+  background: var(--success);
+  color: var(--white);
+}
+
+.option-btn.incorrect {
+  border-color: var(--error);
+  background: var(--error-light);
+}
+
+.option-btn.incorrect .option-letter {
+  background: var(--error);
+  color: var(--white);
+}
+
+/* === Feedback === */
+.feedback {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  line-height: 1.4;
+  animation: fadeIn 0.25s ease;
+}
+
+.feedback.correct {
+  background: var(--success-light);
+  color: #1a7a3a;
+  border: 1px solid #b8e6c8;
+}
+
+.feedback.incorrect {
+  background: var(--error-light);
+  color: #c0291f;
+  border: 1px solid #fcc;
+}
+
+.feedback strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.next-btn-wrap {
+  margin-top: 20px;
+}
+
+/* === Result Screen === */
+.result-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 2rem;
+}
+
+.result-icon.great {
+  background: var(--success-light);
+}
+
+.result-icon.good {
+  background: var(--accent-light);
+}
+
+.result-icon.ok {
+  background: #fff8e6;
+}
+
+.result-score {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.result-score .score-num {
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+}
+
+.result-score .score-total {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+}
+
+.result-message {
+  text-align: center;
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 28px;
+}
+
+.result-details {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.result-stat {
+  flex: 1;
+  text-align: center;
+  padding: 14px 8px;
+  background: var(--border-light);
+  border-radius: var(--radius);
+}
+
+.result-stat .stat-num {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.result-stat .stat-label {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+.result-stat.correct-stat .stat-num {
+  color: var(--success);
+}
+
+.result-stat.incorrect-stat .stat-num {
+  color: var(--error);
+}
+
+/* === Responsive === */
+@media (min-width: 480px) {
+  body {
+    padding: 40px 24px;
+    align-items: center;
+  }
+
+  .card {
+    padding: 40px 32px;
+  }
+
+  .start-title {
+    font-size: 1.75rem;
+  }
+
+  .question-text {
+    font-size: 1.25rem;
+  }
+}
+</style>
+</head>
+<body>
+<main id="app" role="main" aria-label="Викторина по компьютерной графике"></main>
+
+<script>
+/* === Constants: Quiz Data === */
+const QUESTIONS = [
+  {
+    id: 1,
+    text: "Что такое компьютерная графика?",
+    options: [
+      "Создание музыки на компьютере",
+      "Создание изображений на компьютере",
+      "Печать текста",
+      "Просмотр мультфильмов"
+    ],
+    correct: 1,
+    explanation: "Компьютерная графика — это создание и обработка изображений с помощью компьютера."
+  },
+  {
+    id: 2,
+    text: "Как сокращённо называют компьютерную графику?",
+    options: ["КГ", "ПК", "КТ", "ГК"],
+    correct: 0,
+    explanation: "Компьютерная графика сокращённо называется КГ — по первым буквам слов."
+  },
+  {
+    id: 3,
+    text: "Какая программа предназначена для создания и редактирования рисунков?",
+    options: ["Калькулятор", "Краска", "Часы", "Блокнот"],
+    correct: 1,
+    explanation: "Программа «Краска» (Paint) позволяет рисовать и редактировать изображения."
+  },
+  {
+    id: 4,
+    text: "Выбери программы, которые можно использовать для работы с рисунками.",
+    options: ["Краска", "Paint.net", "Калькулятор", "Paint и Paint.net"],
+    correct: 3,
+    explanation: "И Paint (Краска), и Paint.net — программы для работы с рисунками."
+  },
+  {
+    id: 5,
+    text: "Какие бывают виды компьютерной графики?",
+    options: ["Большая и маленькая", "Векторная и растровая", "Чёрная и белая", "Простая и сложная"],
+    correct: 1,
+    explanation: "Компьютерная графика делится на два основных вида: векторную и растровую."
+  },
+  {
+    id: 6,
+    text: "Из чего состоит растровое изображение?",
+    options: ["Из пикселей", "Из звуков", "Из линий", "Из фигур"],
+    correct: 0,
+    explanation: "Растровое изображение состоит из маленьких точек — пикселей."
+  },
+  {
+    id: 7,
+    text: "Что является основой векторного изображения?",
+    options: ["Пиксель", "Линия и фигура", "Музыка", "Фотография"],
+    correct: 1,
+    explanation: "Векторное изображение строится из линий, кривых и геометрических фигур."
+  },
+  {
+    id: 8,
+    text: "Как называется маленькая точка, из которых состоит растровое изображение?",
+    options: ["Линия", "Фигура", "Пиксель", "Кнопка"],
+    correct: 2,
+    explanation: "Пиксель — это smallest элемент растрового изображения, маленькая цветная точка."
+  },
+  {
+    id: 9,
+    text: "Кто создаёт изображения, логотипы и оформление?",
+    options: ["Графический дизайнер", "Водитель", "Повар", "Спортсмен"],
+    correct: 0,
+    explanation: "Графический дизайнер — специалист, который создаёт визуальное оформление, логотипы и изображения."
+  },
+  {
+    id: 10,
+    text: "Кто создаёт мультфильмы?",
+    options: ["Инженер-конструктор", "Мультипликатор", "Врач", "Продавец"],
+    correct: 1,
+    explanation: "Мультипликатор — это человек, который создаёт мультфильмы и анимацию."
+  }
+];
+
+const LETTERS = ["А", "Б", "В", "Г"];
+
+/* === State === */
+let state = {
+  screen: "start", // start | question | result
+  currentQuestion: 0,
+  score: 0,
+  answered: false,
+  selectedOption: -1
+};
+
+/* === DOM Reference === */
+const app = document.getElementById("app");
+
+/* === Render Functions === */
+
+function renderStart() {
+  app.innerHTML = `
+    <div class="card">
+      <div class="start-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14l-4-4 1.41-1.41L11 13.17l5.59-5.59L18 9l-7 7z"/></svg>
+      </div>
+      <h1 class="start-title">Компьютерная графика</h1>
+      <p class="start-subtitle">Викторина для учеников 3 класса</p>
+      <div class="rules-box">
+        <h3>Правила</h3>
+        <ul>
+          <li>10 вопросов с выбором ответа</li>
+          <li>1 балл за каждый правильный ответ</li>
+          <li>Выбирай один вариант ответа</li>
+          <li>Отвечай внимательно!</li>
+        </ul>
+      </div>
+      <button class="btn btn-primary" id="startBtn" type="button">Начать викторину</button>
+    </div>
+  `;
+  document.getElementById("startBtn").addEventListener("click", startQuiz);
+}
+
+function renderQuestion() {
+  const q = QUESTIONS[state.currentQuestion];
+  const progress = ((state.currentQuestion) / QUESTIONS.length) * 100;
+
+  let optionsHTML = "";
+  q.options.forEach(function(opt, idx) {
+    let extraClass = "";
+    if (state.answered) {
+      if (idx === q.correct) extraClass = " correct";
+      else if (idx === state.selectedOption && idx !== q.correct) extraClass = " incorrect";
+    }
+    optionsHTML += `
+      <button class="option-btn${extraClass}" data-index="${idx}" type="button" ${state.answered ? "disabled" : ""} aria-label="Вариант ${LETTERS[idx]}: ${opt}">
+        <span class="option-letter">${LETTERS[idx]}</span>
+        <span>${opt}</span>
+      </button>
+    `;
+  });
+
+  let feedbackHTML = "";
+  if (state.answered) {
+    const isCorrect = state.selectedOption === q.correct;
+    feedbackHTML = `
+      <div class="feedback ${isCorrect ? 'correct' : 'incorrect'}" role="alert">
+        <strong>${isCorrect ? "✓ Верно!" : "✗ Неверно"}</strong>
+        ${q.explanation}
+      </div>
+    `;
+  }
+
+  let nextBtnHTML = "";
+  if (state.answered) {
+    const btnText = state.currentQuestion < QUESTIONS.length - 1 ? "Следующий вопрос" : "Показать результат";
+    nextBtnHTML = `<div class="next-btn-wrap"><button class="btn btn-primary" id="nextBtn" type="button">${btnText}</button></div>`;
+  }
+
+  app.innerHTML = `
+    <div class="card">
+      <div class="progress-bar" role="progressbar" aria-valuenow="${state.currentQuestion + 1}" aria-valuemin="1" aria-valuemax="${QUESTIONS.length}">
+        <div class="progress-track">
+          <div class="progress-fill" style="width: ${progress}%"></div>
+        </div>
+        <span class="progress-text">${state.currentQuestion + 1} / ${QUESTIONS.length}</span>
+      </div>
+      <p class="question-number">Вопрос ${state.currentQuestion + 1}</p>
+      <h2 class="question-text">${q.text}</h2>
+      <div class="options" role="radiogroup" aria-label="Варианты ответа">
+        ${optionsHTML}
+      </div>
+      ${feedbackHTML}
+      ${nextBtnHTML}
+    </div>
+  `;
+
+  // Attach option handlers
+  if (!state.answered) {
+    const optionBtns = app.querySelectorAll(".option-btn");
+    optionBtns.forEach(function(btn) {
+      btn.addEventListener("click", handleOptionClick);
+    });
+  }
+
+  // Attach next button
+  const nextBtn = document.getElementById("nextBtn");
+  if (nextBtn) {
+    nextBtn.addEventListener("click", handleNext);
+  }
+}
+
+function renderResult() {
+  const total = QUESTIONS.length;
+  const incorrect = total - state.score;
+  let emoji, message, iconClass;
+
+  if (state.score >= 9) {
+    emoji = "🏆";
+    message = "Превосходно! Ты настоящий эксперт по компьютерной графике!";
+    iconClass = "great";
+  } else if (state.score >= 7) {
+    emoji = "🎉";
+    message = "Отличный результат! Ты хорошо знаешь тему!";
+    iconClass = "great";
+  } else if (state.score >= 5) {
+    emoji = "👍";
+    message = "Хорошо! Но есть что повторить. Попробуй ещё раз!";
+    iconClass = "good";
+  } else {
+    emoji = "📚";
+    message = "Не расстраивайся! Повтори тему и попробуй снова.";
+    iconClass = "ok";
+  }
+
+  app.innerHTML = `
+    <div class="card">
+      <div class="result-icon ${iconClass}" aria-hidden="true">${emoji}</div>
+      <div class="result-score">
+        <span class="score-num">${state.score}</span>
+        <span class="score-total"> / ${total}</span>
+      </div>
+      <p class="result-message">${message}</p>
+      <div class="result-details">
+        <div class="result-stat correct-stat">
+          <div class="stat-num">${state.score}</div>
+          <div class="stat-label">Верных</div>
+        </div>
+        <div class="result-stat incorrect-stat">
+          <div class="stat-num">${incorrect}</div>
+          <div class="stat-label">Ошибок</div>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="retryBtn" type="button">Пройти снова</button>
+    </div>
+  `;
+
+  document.getElementById("retryBtn").addEventListener("click", resetQuiz);
+}
+
+/* === Main Render === */
+function render() {
+  switch (state.screen) {
+    case "start": renderStart(); break;
+    case "question": renderQuestion(); break;
+    case "result": renderResult(); break;
+  }
+}
+
+/* === Handlers === */
+function startQuiz() {
+  state.screen = "question";
+  state.currentQuestion = 0;
+  state.score = 0;
+  state.answered = false;
+  state.selectedOption = -1;
+  render();
+}
+
+function handleOptionClick(e) {
+  const btn = e.currentTarget;
+  const index = parseInt(btn.dataset.index, 10);
+  const q = QUESTIONS[state.currentQuestion];
+
+  state.answered = true;
+  state.selectedOption = index;
+
+  if (index === q.correct) {
+    state.score++;
+  }
+
+  render();
+}
+
+function handleNext() {
+  if (state.currentQuestion < QUESTIONS.length - 1) {
+    state.currentQuestion++;
+    state.answered = false;
+    state.selectedOption = -1;
+    render();
+  } else {
+    state.screen = "result";
+    render();
+  }
+}
+
+function resetQuiz() {
+  state.screen = "start";
+  state.currentQuestion = 0;
+  state.score = 0;
+  state.answered = false;
+  state.selectedOption = -1;
+  render();
+}
+
+/* === Init === */
+render();
+</script>
+</body>
+</html>
